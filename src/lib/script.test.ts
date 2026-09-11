@@ -187,22 +187,28 @@ describe("renderCodexScript", () => {
 });
 
 describe("ALL_SCRIPT_TEMPLATES leftover-placeholder check", () => {
-  it("has no unreplaced {{...}} placeholder in any of the four templates once rendered", () => {
+  it("has no unreplaced {{...}} placeholder in any template once rendered", () => {
     const claudeCodePosix = renderClaudeCodeScript(sampleClaudeCodeInput("linux"));
     const claudeCodeWindows = renderClaudeCodeScript(
       sampleClaudeCodeInput("windows"),
     );
     const codexPosix = renderCodexScript(sampleCodexInput("linux"));
     const codexWindows = renderCodexScript(sampleCodexInput("windows"));
+    // The interactive CLI template is rendered by its route handler rather
+    // than by a render* helper here; its one placeholder is the origin.
+    const cliPosix = renderScript(ALL_SCRIPT_TEMPLATES["cli-posix.sh.tpl"], {
+      ORIGIN: "https://setting.example.com",
+    });
 
     const rendered = {
       "claudecode-posix.sh.tpl": claudeCodePosix,
       "claudecode-windows.ps1.tpl": claudeCodeWindows,
       "codex-posix.sh.tpl": codexPosix,
       "codex-windows.ps1.tpl": codexWindows,
+      "cli-posix.sh.tpl": cliPosix,
     };
 
-    // Sanity: this test must actually exercise all four templates this
+    // Sanity: this test must actually exercise every template this
     // module owns, not silently drop one if a name is renamed.
     expect(Object.keys(rendered).sort()).toEqual(
       Object.keys(ALL_SCRIPT_TEMPLATES).sort(),

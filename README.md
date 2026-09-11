@@ -9,6 +9,24 @@ installer, and a full install script per OS (POSIX shell / PowerShell).
 See `openspec/changes/add-cli-config-generator/` for the full proposal,
 design decisions, and requirements this project implements.
 
+## Interactive setup from the terminal
+
+Instead of filling in the web form, run the setup CLI against a deployed
+instance. It asks for the same fields, then calls the `/api/setup/*` routes
+below with the answers and runs the install script they return:
+
+```bash
+sh -c "$(curl -fsSL http://<host>/api/setup/cli)"
+```
+
+`curl -fsSL http://<host>/api/setup/cli | sh` works too — the prompts are read
+from `/dev/tty`, not stdin. POSIX shells only (macOS/Linux); Windows has no
+interactive equivalent yet, use the web UI or the one-liner routes.
+
+Every answer is validated by the installer routes, so a bad key, model or base
+URL is rejected there and the failure naming the offending field is printed in
+the terminal. Nothing is written outside `~/.claude` and `~/.codex`.
+
 ## Requirements
 
 - Node.js `v24.19.0` (or a version satisfying `next@16`, `typescript@7`,
