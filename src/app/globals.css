@@ -1,0 +1,727 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap");
+
+/*
+ * Design tokens lifted from the approved artboards (Main.dc.html /
+ * Mobile.dc.html) at the project root. A few border/text shades were
+ * deliberately brightened from the artboard's literal hex values to meet
+ * WCAG 2.1 AA contrast (spec: "Accessibility" / "Contrast") — see the
+ * comments below each affected token. Everything else matches the
+ * artboards exactly.
+ */
+:root {
+  color-scheme: dark;
+
+  --sk-bg: #0c0d10;
+  --sk-surface: #121419;
+  --sk-surface-alt: #0e1014;
+  --sk-input-bg: #0b0d11;
+  --sk-accent-bg: #16201a;
+
+  /* Decorative dividers only (not a control boundary) — kept at the
+     artboard's literal value; WCAG 1.4.11 does not apply to non-UI,
+     non-informational separators. */
+  --sk-border-divider: #1f232a;
+  --sk-border-divider-soft: #1c2026;
+
+  /* Artboard used #262a31 (~1.3:1 against --sk-surface) for every input
+     and button border. WCAG 1.4.11 requires >=3:1 for a boundary that is
+     the only way a user perceives a control's edge, so the resting-state
+     border below is brightened to #5d646e (~3.1-3.25:1 against
+     surface/input/bg — see contrast check performed while implementing
+     this batch). Selected/focused/error states already use accent/red,
+     which comfortably clear 3:1. */
+  --sk-border: #5d646e;
+  --sk-border-error: #f2626b;
+
+  --sk-text: #e6e8eb;
+  --sk-text-label: #b4bbc4;
+  --sk-text-dim: #98a0ab;
+  /* Artboard used #5d646e / #4f565f / #6e767f for small secondary/mono
+     text (tier headings, hints, tab labels). Those range 2.6-4.2:1 against
+     the dark surfaces, below the 4.5:1 AA minimum for normal-size text.
+     #7c848f (~5.1-5.2:1) replaces all of them as the floor for any real
+     text in this app. */
+  --sk-text-muted: #7c848f;
+
+  --sk-accent: #56d98a;
+  --sk-amber: #e0a83c;
+  --sk-red: #f2626b;
+
+  --sk-radius: 4px;
+  --sk-font-sans:
+    "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --sk-font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--sk-bg);
+  color: var(--sk-text);
+  font-family: var(--sk-font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  /* 8.8: the page body itself must never scroll horizontally; any wide
+     content (script/JSON output) scrolls inside its own container instead. */
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--sk-accent);
+}
+
+a:hover {
+  color: #7fe8ac;
+}
+
+input,
+button,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+/* Visible focus indicator on every interactive element (spec: Accessibility). */
+:focus-visible {
+  outline: 2px solid var(--sk-accent);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: #1f3a2b;
+  color: var(--sk-text);
+}
+
+.sk-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── App shell ──────────────────────────────────────────────────── */
+
+.sk-app {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.sk-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 52px;
+  flex: 0 0 auto;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--sk-border-divider);
+  background: var(--sk-surface-alt);
+}
+
+.sk-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--sk-font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.sk-header__note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--sk-text-muted);
+  font-size: 12px;
+  text-align: right;
+}
+
+.sk-main {
+  flex: 1 1 auto;
+  padding: 24px 20px 32px;
+}
+
+.sk-intro {
+  max-width: 620px;
+  margin: 0 0 22px;
+}
+
+.sk-intro h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.sk-intro p {
+  margin: 0;
+  color: var(--sk-text-dim);
+  font-size: 14px;
+}
+
+.sk-loading {
+  color: var(--sk-text-muted);
+  font-size: 13px;
+  padding: 40px 0;
+}
+
+/* ── Layout: form + result panel ───────────────────────────────── */
+
+.sk-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  max-width: 1180px;
+}
+
+.sk-panel {
+  background: var(--sk-surface);
+  border: 1px solid var(--sk-border-divider);
+  border-radius: var(--sk-radius);
+  min-width: 0;
+}
+
+.sk-form-panel {
+  flex: 0 0 380px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sk-result-panel {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+@media (max-width: 860px) {
+  .sk-layout {
+    flex-direction: column;
+  }
+
+  .sk-form-panel,
+  .sk-result-panel {
+    flex: 1 1 auto;
+    width: 100%;
+  }
+}
+
+/* ── Form fields ────────────────────────────────────────────────── */
+
+.sk-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-field__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sk-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sk-text-label);
+}
+
+.sk-input {
+  height: 38px;
+  padding: 0 11px;
+  width: 100%;
+  min-width: 0;
+  background: var(--sk-input-bg);
+  color: var(--sk-text);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius);
+  font-family: var(--sk-font-mono);
+  font-size: 13px;
+}
+
+.sk-input::placeholder {
+  color: var(--sk-text-muted);
+}
+
+.sk-input[aria-invalid="true"] {
+  border-color: var(--sk-border-error);
+}
+
+.sk-reveal-btn {
+  height: 24px;
+  padding: 0 9px;
+  background: transparent;
+  color: var(--sk-text-muted);
+  border: 1px solid var(--sk-border);
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+.sk-reveal-btn:hover {
+  color: var(--sk-text);
+}
+
+.sk-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--sk-red);
+  font-size: 12px;
+}
+
+.sk-error svg {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.sk-divider {
+  height: 1px;
+  background: var(--sk-border-divider-soft);
+  border: none;
+  margin: 0;
+}
+
+.sk-section-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--sk-text-label);
+}
+
+/* ── Choice controls (checkbox/radio, visually styled, natively accessible) ── */
+
+.sk-choice-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sk-choice-group--split {
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius);
+  overflow: hidden;
+  width: fit-content;
+  gap: 0;
+}
+
+.sk-choice-group--full > .sk-choice {
+  flex: 1 1 0;
+}
+
+.sk-choice {
+  position: relative;
+  display: inline-flex;
+}
+
+.sk-choice__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.sk-choice__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px;
+  background: transparent;
+  color: var(--sk-text-muted);
+  border: 1px solid var(--sk-border);
+  border-radius: var(--sk-radius);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sk-choice-group--split .sk-choice__box {
+  height: 32px;
+  border: none;
+  border-radius: 0;
+  font-family: var(--sk-font-mono);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.sk-choice__input:checked + .sk-choice__box {
+  background: var(--sk-accent-bg);
+  color: var(--sk-accent);
+  border-color: var(--sk-accent);
+}
+
+.sk-choice-group--split .sk-choice__input:checked + .sk-choice__box {
+  background: #1c2128;
+  color: var(--sk-text);
+}
+
+.sk-choice__input:focus-visible + .sk-choice__box {
+  outline: 2px solid var(--sk-accent);
+  outline-offset: 2px;
+}
+
+.sk-choice__input:disabled + .sk-choice__box {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.sk-choice--sm .sk-choice__box {
+  height: 28px;
+  padding: 0 11px;
+  font-family: var(--sk-font-mono);
+  font-size: 11px;
+}
+
+.sk-hint {
+  font-size: 11.5px;
+  color: var(--sk-text-muted);
+}
+
+/* ── Advanced panel ─────────────────────────────────────────────── */
+
+.sk-advanced-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  color: var(--sk-text-dim);
+  font-size: 12.5px;
+}
+
+.sk-advanced-toggle__label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sk-advanced-toggle__caret {
+  transition: transform 0.15s ease;
+}
+
+.sk-advanced-toggle[aria-expanded="true"] .sk-advanced-toggle__caret {
+  transform: rotate(90deg);
+}
+
+.sk-advanced-toggle__count {
+  font-family: var(--sk-font-mono);
+  font-size: 11px;
+  color: var(--sk-text-muted);
+}
+
+.sk-advanced-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 14px;
+  background: var(--sk-surface-alt);
+  border: 1px solid var(--sk-border-divider);
+  border-radius: var(--sk-radius);
+}
+
+.sk-tier-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sk-tier-group__title {
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  color: var(--sk-text-muted);
+  letter-spacing: 0.05em;
+}
+
+.sk-tier-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+@media (max-width: 420px) {
+  .sk-tier-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sk-tier-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.sk-tier-field__label {
+  font-family: var(--sk-font-mono);
+  font-size: 10.5px;
+  color: var(--sk-text-muted);
+  letter-spacing: 0.02em;
+}
+
+.sk-tier-field .sk-input {
+  height: 32px;
+  padding: 0 9px;
+  font-size: 11.5px;
+}
+
+.sk-subagent-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sk-provider-row {
+  display: flex;
+  gap: 10px;
+}
+
+@media (max-width: 420px) {
+  .sk-provider-row {
+    flex-direction: column;
+  }
+}
+
+.sk-provider-row .sk-field {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* ── Target selector ────────────────────────────────────────────── */
+
+.sk-target-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-target-hint {
+  font-size: 11.5px;
+  color: var(--sk-text-muted);
+}
+
+/* ── Result panel ───────────────────────────────────────────────── */
+
+.sk-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 6px 6px 0;
+  border-bottom: 1px solid var(--sk-border-divider);
+  background: var(--sk-surface-alt);
+}
+
+.sk-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--sk-text-muted);
+  font-family: var(--sk-font-mono);
+  font-size: 12px;
+}
+
+.sk-tab[aria-selected="true"] {
+  background: var(--sk-surface);
+  color: var(--sk-text);
+  border-bottom-color: var(--sk-accent);
+}
+
+.sk-tab__star {
+  color: var(--sk-accent);
+}
+
+.sk-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--sk-border-divider-soft);
+}
+
+.sk-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--sk-text-muted);
+  font-size: 12px;
+}
+
+.sk-note--accent {
+  color: var(--sk-accent);
+}
+
+.sk-note--warn {
+  color: var(--sk-amber);
+}
+
+.sk-note--danger {
+  color: var(--sk-red);
+}
+
+.sk-note code {
+  font-family: var(--sk-font-mono);
+  color: var(--sk-text);
+}
+
+.sk-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.sk-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  background: transparent;
+  color: var(--sk-text-dim);
+  border: 1px solid var(--sk-border);
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+.sk-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sk-action-btn--active {
+  background: var(--sk-accent-bg);
+  color: var(--sk-accent);
+  border-color: var(--sk-accent);
+}
+
+.sk-output {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 420px;
+  min-width: 0;
+}
+
+.sk-output__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 100%;
+  min-height: 420px;
+  padding: 24px;
+  color: var(--sk-text-muted);
+  text-align: center;
+}
+
+.sk-output__pre {
+  margin: 0;
+  height: 100%;
+  min-height: 420px;
+  max-height: 640px;
+  overflow: auto;
+  padding: 14px 16px;
+  background: #0a0c0f;
+  color: #c9cfd6;
+  font-family: var(--sk-font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.sk-output__pre::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.sk-output__pre::-webkit-scrollbar-thumb {
+  background: #2a2f36;
+  border-radius: 0;
+}
+
+.sk-output__pre::-webkit-scrollbar-track {
+  background: #101216;
+}
+
+.sk-footer-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 12px 14px;
+  max-width: 1180px;
+  background: #101418;
+  border: 1px solid #1c2732;
+  border-radius: 3px;
+  color: var(--sk-text-dim);
+  font-size: 12.5px;
+}
+
+.sk-footer-note code {
+  font-family: var(--sk-font-mono);
+  color: var(--sk-text);
+}
+
+/* ── Responsive: usable down to 400px (spec: Responsive layout) ──── */
+
+@media (max-width: 480px) {
+  .sk-main {
+    padding: 18px 14px 24px;
+  }
+
+  .sk-header {
+    padding: 0 14px;
+  }
+
+  .sk-choice-group--full {
+    flex-direction: column;
+  }
+
+  .sk-input,
+  .sk-choice__box {
+    min-height: 44px;
+  }
+
+  .sk-tier-field .sk-input {
+    min-height: 40px;
+  }
+}

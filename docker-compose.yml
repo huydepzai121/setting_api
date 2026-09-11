@@ -1,0 +1,11 @@
+services:
+  setting-key:
+    image: huydepzai12345/setting_api:latest
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+    restart: unless-stopped

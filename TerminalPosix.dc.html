@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500&display=swap');
+    body { margin: 0; background: #0C0D10; }
+    a { color: #56D98A; } a:hover { color: #7FE8AC; }
+  </style>
+</helmet>
+
+<div style="min-height: 800px; background: #0C0D10; padding: 26px; font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif;">
+
+  <div style="display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px;">
+    <span style="font-size: 13px; font-weight: 600; color: #E6E8EB;">macOS / Linux</span>
+    <span style="font-size: 12px; color: #7C848F;">Claude Code — chạy script đầy đủ</span>
+  </div>
+
+  <div style="background: #0A0C0F; border: 1px solid #23272E; border-radius: 6px; overflow: hidden; box-shadow: 0 18px 48px rgba(0,0,0,0.45);">
+
+    <div style="display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; background: #15181D; border-bottom: 1px solid #23272E;">
+      <div style="display: flex; gap: 6px;">
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #F2626B;"></span>
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #E0A83C;"></span>
+        <span style="width: 10px; height: 10px; border-radius: 50%; background: #56D98A;"></span>
+      </div>
+      <span style="flex: 1 1 0; text-align: center; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; color: #7C848F;">huy@studio — sh — 96×32</span>
+      <span style="width: 52px;"></span>
+    </div>
+
+    <pre style="margin: 0; padding: 16px 18px; background: #0A0C0F; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12.5px; line-height: 1.75; color: #C9CFD6; white-space: pre-wrap; word-break: break-all;"><span style="color: #56D98A;">~</span> <span style="color: #7C848F;">$</span> sh setup.sh
+
+<span style="color: #E6E8EB; font-weight: 600;">setting-key</span> <span style="color: #5D646E;">·</span> Claude Code
+<span style="color: #3A4048;">────────────────────────────────────────────────────────</span>
+  Endpoint   <span style="color: #79A6F6;">https://api.example.com</span>
+  Key        <span style="color: #79A6F6;">sk-ant-rou…</span>
+  Model      <span style="color: #79A6F6;">claude-sonnet-4-6</span> <span style="color: #5D646E;">× 3 bậc</span>
+  Subagent   <span style="color: #79A6F6;">bậc sonnet</span>
+
+<span style="color: #E0A83C;">!</span>  <span style="color: #E0A83C;">2 biến môi trường đang đè lên settings.json</span>
+   <span style="color: #98A0AB;">ANTHROPIC_BASE_URL, ANTHROPIC_AUTH_TOKEN</span>
+   <span style="color: #7C848F;">Script này không tự xoá chúng. Gỡ thủ công rồi mở lại shell:</span>
+   <span style="color: #98A0AB;">~/.zshrc:42</span>  <span style="color: #5D646E;">export ANTHROPIC_BASE_URL=…</span>
+   <span style="color: #98A0AB;">~/.zshrc:43</span>  <span style="color: #5D646E;">export ANTHROPIC_AUTH_TOKEN=…</span>
+
+<span style="color: #56D98A;">✓</span>  Sao lưu   <span style="color: #98A0AB;">~/.claude/settings.json.backup.20260911121840</span>
+<span style="color: #56D98A;">✓</span>  Giữ lại   <span style="color: #98A0AB;">permissions, hooks, statusLine, model</span>
+<span style="color: #56D98A;">✓</span>  Ghi       <span style="color: #98A0AB;">~/.claude/settings.json</span>  <span style="color: #5D646E;">(+6 khoá env, +2 khoá gốc)</span>
+
+<span style="color: #3A4048;">────────────────────────────────────────────────────────</span>
+   Xong. Mọi thứ nằm trong <span style="color: #E6E8EB;">settings.json</span> — không đặt biến môi trường nào.
+   Khởi động lại Claude Code để áp dụng.
+
+<span style="color: #56D98A;">~</span> <span style="color: #7C848F;">$</span> <span style="background: #56D98A; color: #0A0C0F;">&nbsp;</span></pre>
+  </div>
+
+  <div style="display: flex; gap: 26px; margin-top: 16px;">
+    <div style="display: flex; align-items: flex-start; gap: 8px; flex: 1 1 0;">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#E0A83C" stroke-width="1.5" stroke-linecap="round" style="margin-top: 2px; flex: 0 0 auto;"><path d="M8 2.5l5.5 10h-11z"></path><path d="M8 6.5v3"></path><path d="M8 11.5h.01"></path></svg>
+      <span style="font-size: 12px; color: #98A0AB; text-wrap: pretty;">Cảnh báo biến môi trường là <strong style="color: #C9CFD6; font-weight: 500;">chỉ cảnh báo</strong> — khác với script cũ, nó không tự <code style="font-family: 'IBM Plex Mono', monospace;">unset</code> hay sửa file shell của bạn.</span>
+    </div>
+    <div style="display: flex; align-items: flex-start; gap: 8px; flex: 1 1 0;">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round" style="margin-top: 2px; flex: 0 0 auto;"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+      <span style="font-size: 12px; color: #98A0AB; text-wrap: pretty;">Nếu sao lưu thất bại (thư mục chỉ đọc, đầy đĩa) script <strong style="color: #C9CFD6; font-weight: 500;">dừng ngay</strong> và không sửa gì.</span>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

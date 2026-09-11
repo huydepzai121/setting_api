@@ -1,0 +1,15 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1280, "h": 1260, "title": "Website — desktop", "is_interactive": true },
+    { "file": "Mobile.dc.html", "x": 1400, "y": 0, "w": 390, "h": 1040, "title": "Website — 390px" },
+    { "file": "TerminalPosix.dc.html", "x": 0, "y": 1400, "w": 940, "h": 800, "title": "Terminal — macOS / Linux" },
+    { "file": "TerminalWindows.dc.html", "x": 1020, "y": 1400, "w": 940, "h": 800, "title": "Terminal — Windows" },
+    { "file": "LightAlternate.dc.html", "x": 0, "y": 2340, "w": 1080, "h": 700, "title": "Hướng thay thế — nền sáng" }
+  ],
+  "annotations": [
+    { "id": "note-main", "x": 0, "y": -132, "w": 420, "text": "Bấm được: gõ vào form thì output đổi theo, đổi tab / OS / target đều thật.\nGõ dấu cách vào API Key để thấy lỗi inline.\nClaude Code = 3 bậc model; subagent chọn bậc, không gõ tên riêng." },
+    { "id": "note-terminal", "x": 0, "y": 1280, "w": 420, "text": "Điểm khác viber-router: chỉ CẢNH BÁO biến ANTHROPIC_*, không tự unset, không sửa .bashrc/.zshrc. Codex thiếu CLI vẫn ghi cấu hình, không tự npm install." },
+    { "id": "note-alt", "x": 0, "y": 2240, "w": 420, "text": "Hướng thay thế để so sánh — nền sáng, kiểu tài liệu. Không phải bản chính." }
+  ],
+  "launch": { "view": "canvas" }
+}

@@ -1,0 +1,705 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
+    body { margin: 0; background: #0C0D10; }
+    a { color: #56D98A; text-decoration: none; }
+    a:hover { color: #7FE8AC; }
+    input, button { font-family: inherit; }
+    input:focus-visible, button:focus-visible {
+      outline: 2px solid #56D98A; outline-offset: 2px;
+    }
+    ::selection { background: #1F3A2B; color: #E6E8EB; }
+    .sk-scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+    .sk-scroll::-webkit-scrollbar-thumb { background: #2A2F36; border-radius: 0; }
+    .sk-scroll::-webkit-scrollbar-track { background: #101216; }
+  </style>
+</helmet>
+
+<div style="min-height: 1260px; background: #0C0D10; color: #E6E8EB; font-family: 'IBM Plex Sans', ui-sans-serif, system-ui, sans-serif; font-size: 14px; line-height: 1.5;">
+
+  <!-- ── Header ─────────────────────────────────────────── -->
+  <div style="display: flex; align-items: center; justify-content: space-between; height: 52px; padding: 0 32px; border-bottom: 1px solid #1D2026; background: #0E0F13;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="{{accent}}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 6l4 4-4 4"></path>
+        <path d="M11 14h6"></path>
+      </svg>
+      <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 14px; font-weight: 600; letter-spacing: -0.01em;">setting-key</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; color: #7C848F; font-size: 12px;">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#7C848F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="10" height="6.5" rx="1"></rect>
+        <path d="M5.5 7V5a2.5 2.5 0 015 0v2"></path>
+      </svg>
+      <span>Không lưu gì trên máy chủ</span>
+    </div>
+  </div>
+
+  <!-- ── Body ───────────────────────────────────────────── -->
+  <div style="padding: 30px 32px 34px;">
+
+    <div style="max-width: 560px; margin-bottom: 26px;">
+      <h1 style="margin: 0 0 8px; font-size: 25px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; text-wrap: pretty;">Trỏ Claude Code và Codex về endpoint của bạn</h1>
+      <p style="margin: 0; color: #98A0AB; font-size: 14px; text-wrap: pretty;">Nhập endpoint, key và tên model. Nhận về đúng file cấu hình — không đụng tới biến môi trường hay file khởi động shell.</p>
+    </div>
+
+    <div style="display: flex; gap: 26px; align-items: flex-start;">
+
+      <!-- ── Form ──────────────────────────────────── -->
+      <div style="flex: 0 0 396px; background: #121419; border: 1px solid #1F232A; border-radius: 4px; padding: 20px;">
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="f-url" style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Base URL</label>
+            <input id="f-url" type="text" value="{{baseUrl}}" onChange="{{onBaseUrl}}" placeholder="https://api.example.com" spellcheck="false" style="height: 38px; padding: 0 11px; background: #0B0D11; color: #E6E8EB; border: 1px solid {{baseUrlBorder}}; border-radius: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;" />
+            <sc-if value="{{hasUrlErr}}" hint-placeholder-val="{{ true }}">
+              <span style="display: flex; align-items: center; gap: 6px; color: #F2626B; font-size: 12px;">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+                <span>{{urlErr}}</span>
+              </span>
+            </sc-if>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <label for="f-key" style="font-size: 12px; font-weight: 500; color: #B4BBC4;">API Key</label>
+              <button type="button" onClick="{{toggleReveal}}" style="height: 24px; padding: 0 9px; background: transparent; color: #7C848F; border: 1px solid #262A31; border-radius: 3px; font-size: 11px; cursor: pointer;">{{revealLabel}}</button>
+            </div>
+            <input id="f-key" type="{{keyInputType}}" value="{{apiKey}}" onChange="{{onKey}}" placeholder="sk-ant-..." spellcheck="false" style="height: 38px; padding: 0 11px; background: #0B0D11; color: #E6E8EB; border: 1px solid {{keyBorder}}; border-radius: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;" />
+            <sc-if value="{{hasKeyErr}}" hint-placeholder-val="{{ true }}">
+              <span style="display: flex; align-items: center; gap: 6px; color: #F2626B; font-size: 12px;">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+                <span>{{keyErr}}</span>
+              </span>
+            </sc-if>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <label for="f-model" style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Tên model</label>
+            <input id="f-model" type="text" value="{{model}}" onChange="{{onModel}}" placeholder="claude-sonnet-4-6" spellcheck="false" style="height: 38px; padding: 0 11px; background: #0B0D11; color: #E6E8EB; border: 1px solid {{modelBorder}}; border-radius: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 13px;" />
+            <sc-if value="{{hasModelErr}}" hint-placeholder-val="{{ true }}">
+              <span style="display: flex; align-items: center; gap: 6px; color: #F2626B; font-size: 12px;">
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+                <span>{{modelErr}}</span>
+              </span>
+            </sc-if>
+          </div>
+
+          <div style="height: 1px; background: #1C2026;"></div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Cấu hình cho</span>
+            <div style="display: flex; gap: 8px;">
+              <sc-for list="{{targets}}" as="t" hint-placeholder-count="2">
+                <button type="button" onClick="{{t.pick}}" title="{{t.hint}}" style="display: flex; align-items: center; gap: 7px; height: 34px; padding: 0 12px; background: {{t.bg}}; color: {{t.fg}}; border: 1px solid {{t.bd}}; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: {{t.cursor}}; opacity: {{t.opacity}};">
+                  <sc-if value="{{t.on}}" hint-placeholder-val="{{ true }}">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="{{t.fg}}" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8.5l3.2 3.2L13 5"></path></svg>
+                  </sc-if>
+                  <sc-if value="{{t.off}}" hint-placeholder-val="{{ false }}">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="{{t.fg}}" stroke-width="1.6"><rect x="3" y="3" width="10" height="10" rx="2"></rect></svg>
+                  </sc-if>
+                  <span>{{t.label}}</span>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <span style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Hệ điều hành</span>
+            <div style="display: flex; gap: 0; border: 1px solid #262A31; border-radius: 4px; overflow: hidden; width: fit-content;">
+              <sc-for list="{{oses}}" as="o" hint-placeholder-count="2">
+                <button type="button" onClick="{{o.pick}}" style="height: 32px; padding: 0 14px; background: {{o.bg}}; color: {{o.fg}}; border: none; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; cursor: pointer;">{{o.label}}</button>
+              </sc-for>
+            </div>
+          </div>
+
+          <sc-if value="{{codexOn}}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <div style="display: flex; gap: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 0;">
+                  <label for="f-pid" style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Provider ID</label>
+                  <input id="f-pid" type="text" value="{{providerId}}" onChange="{{onProviderId}}" spellcheck="false" style="height: 36px; padding: 0 11px; background: #0B0D11; color: #E6E8EB; border: 1px solid {{pidBorder}}; border-radius: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;" />
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 6px; flex: 1 1 0;">
+                  <label for="f-pname" style="font-size: 12px; font-weight: 500; color: #B4BBC4;">Provider name</label>
+                  <input id="f-pname" type="text" value="{{providerName}}" onChange="{{onProviderName}}" spellcheck="false" style="height: 36px; padding: 0 11px; background: #0B0D11; color: #E6E8EB; border: 1px solid #262A31; border-radius: 4px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px;" />
+                </div>
+              </div>
+              <sc-if value="{{hasPidErr}}" hint-placeholder-val="{{ false }}">
+                <span style="display: flex; align-items: center; gap: 6px; color: #F2626B; font-size: 12px;">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+                  <span>{{pidErr}}</span>
+                </span>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <div style="height: 1px; background: #1C2026;"></div>
+
+          <button type="button" onClick="{{toggleAdvanced}}" style="display: flex; align-items: center; justify-content: space-between; width: 100%; height: 32px; padding: 0; background: transparent; color: #98A0AB; border: none; font-size: 12.5px; cursor: pointer;">
+            <span style="display: flex; align-items: center; gap: 7px;">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#98A0AB" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" style="transform: rotate({{caret}}deg);"><path d="M6 3.5L10.5 8L6 12.5"></path></svg>
+              <span>Đặt model riêng cho từng bậc</span>
+            </span>
+            <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; color: #5D646E;">{{slotCount}}</span>
+          </button>
+
+          <sc-if value="{{advanced}}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; flex-direction: column; gap: 14px; padding: 14px; background: #0E1014; border: 1px solid #1F232A; border-radius: 4px;">
+
+              <sc-if value="{{claudeOn}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #5D646E; letter-spacing: 0.04em;">CLAUDE CODE</span>
+                  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px;">
+                    <sc-for list="{{claudeSlots}}" as="s" hint-placeholder-count="3">
+                      <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="{{s.id}}" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #7C848F; letter-spacing: 0.02em;">{{s.label}}</label>
+                        <input id="{{s.id}}" type="text" value="{{s.value}}" onChange="{{s.set}}" spellcheck="false" style="height: 32px; padding: 0 9px; background: #0B0D11; color: #C9CFD6; border: 1px solid {{s.border}}; border-radius: 3px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; min-width: 0;" />
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 11.5px; color: #98A0AB;">Subagent dùng bậc</span>
+                    <div style="display: flex; border: 1px solid #23272E; border-radius: 3px; overflow: hidden;">
+                      <sc-for list="{{tiers}}" as="ti" hint-placeholder-count="3">
+                        <button type="button" onClick="{{ti.pick}}" style="height: 28px; padding: 0 11px; background: {{ti.bg}}; color: {{ti.fg}}; border: none; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; cursor: pointer;">{{ti.label}}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{codexOn}}" hint-placeholder-val="{{ true }}">
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                  <span style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #5D646E; letter-spacing: 0.04em;">CODEX</span>
+                  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px;">
+                    <sc-for list="{{codexSlots}}" as="s" hint-placeholder-count="3">
+                      <div style="display: flex; flex-direction: column; gap: 5px;">
+                        <label for="{{s.id}}" style="font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 10.5px; color: #7C848F; letter-spacing: 0.02em;">{{s.label}}</label>
+                        <input id="{{s.id}}" type="text" value="{{s.value}}" onChange="{{s.set}}" spellcheck="false" style="height: 32px; padding: 0 9px; background: #0B0D11; color: #C9CFD6; border: 1px solid {{s.border}}; border-radius: 3px; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11.5px; min-width: 0;" />
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{hasSlotErr}}" hint-placeholder-val="{{ false }}">
+                <span style="display: flex; align-items: center; gap: 6px; color: #F2626B; font-size: 12px;">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="#F2626B" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 5v3.5"></path><path d="M8 11h.01"></path></svg>
+                  <span>{{slotErr}}</span>
+                </span>
+              </sc-if>
+
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+      <!-- ── Output ────────────────────────────────── -->
+      <div style="flex: 1 1 0; background: #121419; border: 1px solid #1F232A; border-radius: 4px; display: flex; flex-direction: column; overflow: hidden;">
+
+        <div style="display: flex; gap: 2px; padding: 6px 6px 0; border-bottom: 1px solid #1F232A; background: #0E1014;">
+          <sc-for list="{{tabs}}" as="tb" hint-placeholder-count="5">
+            <button type="button" onClick="{{tb.pick}}" style="display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; background: {{tb.bg}}; color: {{tb.fg}}; border: none; border-bottom: 2px solid {{tb.line}}; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; cursor: pointer;">
+              <span>{{tb.label}}</span>
+              <sc-if value="{{tb.starred}}" hint-placeholder-val="{{ false }}">
+                <svg width="11" height="11" viewBox="0 0 16 16" fill="{{accent}}" stroke="none"><path d="M8 1.8l1.8 3.9 4.2.5-3.1 2.9.8 4.2L8 11.3 4.3 13.3l.8-4.2L2 6.2l4.2-.5z"></path></svg>
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 1px solid #1A1E24;">
+          <span style="display: flex; align-items: center; gap: 8px; color: {{noteColor}}; font-size: 12px;">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="{{noteColor}}" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="6"></circle><path d="M8 7.5v3.5"></path><path d="M8 5h.01"></path></svg>
+            <span>{{note}}</span>
+          </span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" onClick="{{copy}}" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; background: {{copyBg}}; color: {{copyFg}}; border: 1px solid {{copyBd}}; border-radius: 3px; font-size: 12px; cursor: pointer;">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="{{copyFg}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"></rect><path d="M10.5 5.5v-1a1.5 1.5 0 00-1.5-1.5H4a1.5 1.5 0 00-1.5 1.5V9A1.5 1.5 0 004 10.5h1"></path></svg>
+              <span>{{copyLabel}}</span>
+            </button>
+            <button type="button" onClick="{{download}}" style="display: flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; background: {{dlBg}}; color: {{dlFg}}; border: 1px solid {{dlBd}}; border-radius: 3px; font-size: 12px; cursor: pointer;">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="{{dlFg}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v8"></path><path d="M4.5 7.5L8 11l3.5-3.5"></path><path d="M2.5 13.5h11"></path></svg>
+              <span>{{dlLabel}}</span>
+            </button>
+          </div>
+        </div>
+
+        <div aria-live="polite" style="position: relative; flex: 1 1 0; min-height: 560px;">
+          <sc-if value="{{isEmpty}}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; height: 560px; color: #4F565F;">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#343A42" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h9l5 5v11a1 1 0 01-1 1H5a1 1 0 01-1-1V5a1 1 0 011-1z"></path><path d="M14 4v5h5"></path></svg>
+              <span style="font-size: 13px;">{{emptyHint}}</span>
+            </div>
+          </sc-if>
+          <sc-if value="{{isReady}}" hint-placeholder-val="{{ true }}">
+            <pre class="sk-scroll" style="margin: 0; height: 560px; overflow: auto; padding: 14px 16px; background: #0A0C0F; color: #C9CFD6; font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 12px; line-height: 1.65; white-space: pre; tab-size: 2;">{{body}}</pre>
+          </sc-if>
+        </div>
+
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-top: 22px; padding: 12px 14px; background: #101418; border: 1px solid #1C2732; border-radius: 3px;">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="{{accent}}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2l5.5 3v4c0 3-2.3 5.2-5.5 6-3.2-.8-5.5-3-5.5-6V5z"></path><path d="M5.8 8.2l1.6 1.6L10.4 6.8"></path></svg>
+      <span style="font-size: 12.5px; color: #98A0AB; text-wrap: pretty;">Script chỉ ghi vào <code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #C9CFD6;">~/.claude</code> và <code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #C9CFD6;">~/.codex</code>. Nó sao lưu file cũ trước khi sửa, và không đụng tới <code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #C9CFD6;">.bashrc</code>, <code style="font-family: 'IBM Plex Mono', ui-monospace, monospace; color: #C9CFD6;">.zshrc</code> hay biến môi trường hệ thống.</span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+
+<script data-dc-script data-props='{"accent":{"editor":"color","default":"#56D98A","options":["#56D98A","#E0A83C","#79A6F6","#C48BF0"]},"$preview":{"width":1280,"height":1260}}'>
+class Component extends DCLogic {
+  vals() {
+    const s = this.state || {};
+    return {
+      baseUrl: s.baseUrl !== undefined ? s.baseUrl : 'https://api.example.com',
+      apiKey: s.apiKey !== undefined ? s.apiKey : 'sk-ant-router_9f2c4e',
+      model: s.model !== undefined ? s.model : 'claude-sonnet-4-6',
+      tab: s.tab || 'settings',
+      os: s.os || 'posix',
+      claude: s.claude !== undefined ? s.claude : true,
+      codex: s.codex !== undefined ? s.codex : true,
+      advanced: s.advanced !== undefined ? s.advanced : false,
+      reveal: s.reveal !== undefined ? s.reveal : false,
+      copied: s.copied !== undefined ? s.copied : false,
+      saved: s.saved !== undefined ? s.saved : false,
+      subTier: s.subTier || 'sonnet',
+      over: s.over || {},
+      pid: s.pid,
+      pname: s.pname
+    };
+  }
+
+  // setState is merged explicitly so a replace-style implementation cannot
+  // wipe unrelated form state on every interaction.
+  set(patch) {
+    this.setState(Object.assign({}, this.state, patch, { copied: false, saved: false }));
+  }
+  flash(patch) {
+    this.setState(Object.assign({}, this.state, patch));
+  }
+
+  checkKey(k) {
+    if (!k) return 'Bắt buộc nhập key.';
+    if (k.length > 300) return 'Key dài quá 300 ký tự.';
+    if (!/^[A-Za-z0-9._:-]+$/.test(k)) return 'Chỉ cho phép chữ, số và - _ . :';
+    return '';
+  }
+  checkModel(m) {
+    if (!m) return 'Bắt buộc nhập tên model.';
+    if (!/^[A-Za-z0-9._:-]+$/.test(m)) return 'Chỉ cho phép chữ, số và - _ . :';
+    return '';
+  }
+  normUrl(u) {
+    if (!u) return { err: 'Bắt buộc nhập base URL.', val: '' };
+    let p;
+    try { p = new URL(u); } catch (e) { return { err: 'Không phải một URL hợp lệ.', val: '' }; }
+    if (p.protocol !== 'http:' && p.protocol !== 'https:') {
+      return { err: 'Chỉ chấp nhận http:// hoặc https://', val: '' };
+    }
+    return { err: '', val: u.replace(/\/+$/, ''), host: p.hostname };
+  }
+  derivePid(host) {
+    const slug = String(host || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return slug || 'provider';
+  }
+  checkPid(p) {
+    if (!p) return 'Bắt buộc nhập provider ID.';
+    if (!/^[a-z0-9][a-z0-9_-]*$/.test(p)) return 'Provider ID chỉ nhận a-z, 0-9, - và _ (bắt đầu bằng chữ hoặc số).';
+    return '';
+  }
+
+  slotVal(v, id) { return v.over[id] !== undefined ? v.over[id] : v.model; }
+  subagentVal(v) { return this.slotVal(v, v.subTier); }
+
+  buildSettings(v, url) {
+    const env = {};
+    env.ANTHROPIC_BASE_URL = url;
+    env.ANTHROPIC_AUTH_TOKEN = v.apiKey;
+    env.ANTHROPIC_DEFAULT_HAIKU_MODEL = this.slotVal(v, 'haiku');
+    env.ANTHROPIC_DEFAULT_SONNET_MODEL = this.slotVal(v, 'sonnet');
+    env.ANTHROPIC_DEFAULT_OPUS_MODEL = this.slotVal(v, 'opus');
+    env.CLAUDE_CODE_SUBAGENT_MODEL = this.subagentVal(v);
+    return JSON.stringify({ env: env, disableLoginPrompt: true, includeCoAuthoredBy: false }, null, 2);
+  }
+
+  buildToml(v, url, pid, pname) {
+    return 'model = "' + this.slotVal(v, 'medium') + '"\n'
+      + 'model_provider = "' + pid + '"\n'
+      + 'model_catalog_json = "~/.codex/models.json"\n\n'
+      + '[model_providers.' + pid + ']\n'
+      + 'name = "' + pname + '"\n'
+      + 'base_url = "' + url + '"\n'
+      + 'experimental_bearer_token = "' + v.apiKey + '"\n'
+      + 'wire_api = "responses"\n\n'
+      + '[features]\n'
+      + 'apps = false\n';
+  }
+
+  buildCatalog(v) {
+    const self = this;
+    const rows = [
+      { slot: 'small', tag: 'Fast' },
+      { slot: 'medium', tag: 'Default' },
+      { slot: 'large', tag: 'Deep' }
+    ];
+    const models = rows.map(function (r, i) {
+      const name = self.slotVal(v, r.slot);
+      return {
+        slug: name,
+        display_name: name,
+        description: name + ' (' + r.tag + ')',
+        default_reasoning_level: 'medium',
+        supported_reasoning_levels: ['low', 'medium', 'high', 'xhigh'],
+        priority: i + 1,
+        context_window: 400000,
+        effective_context_window_percent: 95,
+        truncation_policy: { mode: 'tokens', limit: 400000 },
+        input_modalities: ['text', 'image']
+      };
+    });
+    return JSON.stringify({ models: models }, null, 2);
+  }
+
+  claudeScript(v, url) {
+    const win = v.os === 'windows';
+    const q = win ? '"' : "'";
+    const head = win
+      ? '# setting-key — Claude Code (Windows / PowerShell)\n$ErrorActionPreference = "Stop"\n'
+      : '#!/bin/sh\n# setting-key — Claude Code (macOS / Linux)\nset -e\n';
+    const vars = '\nENDPOINT=' + q + url + q + '\nAPI_KEY=' + q + v.apiKey + q
+      + '\nHAIKU=' + q + this.slotVal(v, 'haiku') + q
+      + '\nSONNET=' + q + this.slotVal(v, 'sonnet') + q
+      + '\nOPUS=' + q + this.slotVal(v, 'opus') + q
+      + '\nSUBAGENT=' + q + this.subagentVal(v) + q + '\n';
+    const rest = win
+      ? '\n# 1. Cảnh báo biến ANTHROPIC_* đang đè lên settings.json (không tự xoá)\n'
+        + '# 2. Sao lưu settings.json — thất bại thì dừng, không sửa file\n'
+        + '# 3. Trộn khoá mới vào, giữ nguyên mọi khoá sẵn có\n\n'
+        + '$dir = Join-Path $env:USERPROFILE ".claude"\n'
+        + 'New-Item -ItemType Directory -Force $dir | Out-Null\n'
+        + '$file = Join-Path $dir "settings.json"\n\n'
+        + 'if (Test-Path $file) {\n'
+        + '  $stamp = Get-Date -Format "yyyyMMddHHmmss"\n'
+        + '  Copy-Item $file "$file.backup.$stamp"\n'
+        + '  $cfg = Get-Content $file -Raw | ConvertFrom-Json\n'
+        + '} else { $cfg = [PSCustomObject]@{} }\n\n'
+        + '# ... trộn 6 khoá env.* rồi ConvertTo-Json ghi lại\n'
+      : '\n# 1. Cảnh báo biến ANTHROPIC_* đang đè lên settings.json (không tự xoá)\n'
+        + '# 2. Sao lưu settings.json — thất bại thì dừng, không sửa file\n'
+        + '# 3. Trộn khoá mới vào bằng jq, giữ nguyên mọi khoá sẵn có\n\n'
+        + 'command -v jq >/dev/null || { echo "Cần cài jq trước."; exit 1; }\n\n'
+        + 'mkdir -p "$HOME/.claude"\n'
+        + 'FILE="$HOME/.claude/settings.json"\n'
+        + '[ -f "$FILE" ] || echo "{}" > "$FILE"\n'
+        + 'cp "$FILE" "$FILE.backup.$(date +%Y%m%d%H%M%S)" || exit 1\n\n'
+        + 'jq --arg u "$ENDPOINT" --arg k "$API_KEY" \\\n'
+        + '   --arg h "$HAIKU" --arg s "$SONNET" --arg o "$OPUS" --arg g "$SUBAGENT" \'\n'
+        + '  .env.ANTHROPIC_BASE_URL = $u |\n'
+        + '  .env.ANTHROPIC_AUTH_TOKEN = $k |\n'
+        + '  .env.ANTHROPIC_DEFAULT_HAIKU_MODEL = $h |\n'
+        + '  .env.ANTHROPIC_DEFAULT_SONNET_MODEL = $s |\n'
+        + '  .env.ANTHROPIC_DEFAULT_OPUS_MODEL = $o |\n'
+        + '  .env.CLAUDE_CODE_SUBAGENT_MODEL = $g |\n'
+        + '  .disableLoginPrompt = true |\n'
+        + '  .includeCoAuthoredBy = false\n'
+        + '\' "$FILE" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE"\n';
+    return head + vars + rest;
+  }
+
+  codexScript(v, url, pid, pname) {
+    const win = v.os === 'windows';
+    const head = win
+      ? '# setting-key — Codex (Windows / PowerShell)\n$ErrorActionPreference = "Stop"\n\n'
+        + '$dir = Join-Path $env:USERPROFILE ".codex"\n'
+        + 'New-Item -ItemType Directory -Force $dir | Out-Null\n'
+        + '$cfg = Join-Path $dir "config.toml"\n\n'
+        + '# Sao lưu rồi ghi đè config.toml; models.json ghi mới;\n'
+        + '# auth.json chỉ tạo khi thiếu. Không cài gói nào.\n'
+        + 'if (Test-Path $cfg) {\n'
+        + '  Copy-Item $cfg "$cfg.backup.$(Get-Date -Format yyyyMMddHHmmss)"\n'
+        + '}\n\n'
+        + 'Set-Content -Encoding utf8 $cfg @"\n'
+      : '#!/bin/sh\n# setting-key — Codex (macOS / Linux)\nset -e\n\n'
+        + 'mkdir -p "$HOME/.codex"\n'
+        + 'CFG="$HOME/.codex/config.toml"\n\n'
+        + '# Sao lưu rồi ghi đè config.toml; models.json ghi mới;\n'
+        + '# auth.json chỉ tạo khi thiếu. Không cài gói nào.\n'
+        + '[ -f "$CFG" ] && { cp "$CFG" "$CFG.backup.$(date +%Y%m%d%H%M%S)" || exit 1; }\n\n'
+        + 'cat > "$CFG" <<TOML\n';
+    const toml = this.buildToml(v, url, pid, pname);
+    const tail = win
+      ? '"@\n\n# models.json: 3 model (' + this.slotVal(v, 'small') + ', '
+        + this.slotVal(v, 'medium') + ', ' + this.slotVal(v, 'large') + ')\n'
+        + '$auth = Join-Path $dir "auth.json"\n'
+        + 'if (-not (Test-Path $auth)) { Set-Content $auth "{}" }\n'
+      : 'TOML\n\n# models.json: 3 model (' + this.slotVal(v, 'small') + ', '
+        + this.slotVal(v, 'medium') + ', ' + this.slotVal(v, 'large') + ')\n'
+        + '[ -s "$HOME/.codex/auth.json" ] || echo "{}" > "$HOME/.codex/auth.json"\n';
+    return head + toml + tail;
+  }
+
+  buildScript(v, url, pid, pname) {
+    const parts = [];
+    if (v.claude) parts.push(this.claudeScript(v, url));
+    if (v.codex) parts.push(this.codexScript(v, url, pid, pname));
+    const sep = v.os === 'windows'
+      ? '\n# ────────────────────────────────────────────────\n\n'
+      : '\n# ────────────────────────────────────────────────\n\n';
+    return parts.join(sep);
+  }
+
+  oneLinerFor(v, url, kind, pid, pname) {
+    const self = this;
+    const parts = ['key=' + encodeURIComponent(v.apiKey), 'base_url=' + encodeURIComponent(url), 'os=' + v.os];
+    if (kind === 'claudecode') {
+      ['haiku', 'sonnet', 'opus'].forEach(function (id) {
+        parts.push(id + '=' + encodeURIComponent(self.slotVal(v, id)));
+      });
+      parts.push('subagent=' + encodeURIComponent(self.subagentVal(v)));
+    } else {
+      ['small', 'medium', 'large'].forEach(function (id) {
+        parts.push(id + '=' + encodeURIComponent(self.slotVal(v, id)));
+      });
+      parts.push('provider_id=' + encodeURIComponent(pid));
+      parts.push('provider_name=' + encodeURIComponent(pname));
+    }
+    const ep = 'https://setting-key.app/api/setup/' + kind + '?' + parts.join('&');
+    return v.os === 'windows' ? 'irm "' + ep + '" | iex' : 'curl -fsSL "' + ep + '" | sh';
+  }
+
+  buildOneLiner(v, url, pid, pname) {
+    const head = v.os === 'windows' ? '# Dán vào PowerShell\n' : '# Dán vào terminal\n';
+    const lines = [];
+    if (v.claude) lines.push('\n# Claude Code\n' + this.oneLinerFor(v, url, 'claudecode', pid, pname));
+    if (v.codex) lines.push('\n# Codex\n' + this.oneLinerFor(v, url, 'codex', pid, pname));
+    return head + lines.join('\n');
+  }
+
+  renderVals() {
+    const self = this;
+    const v = this.vals();
+    const accent = this.props.accent || '#56D98A';
+
+    const u = this.normUrl(v.baseUrl);
+    const keyErr = this.checkKey(v.apiKey);
+    const modelErr = this.checkModel(v.model);
+
+    const host = u.host || 'example.com';
+    const pid = v.pid !== undefined ? v.pid : this.derivePid(host);
+    const pname = v.pname !== undefined ? v.pname : host;
+    const pidErr = v.codex ? this.checkPid(pid) : '';
+
+    const claudeDefs = [
+      { id: 'haiku', label: 'HAIKU' },
+      { id: 'sonnet', label: 'SONNET' },
+      { id: 'opus', label: 'OPUS' }
+    ];
+    const codexDefs = [
+      { id: 'small', label: 'SMALL' },
+      { id: 'medium', label: 'MEDIUM' },
+      { id: 'large', label: 'LARGE' }
+    ];
+
+    let slotErr = '';
+    const mkSlot = function (d) {
+      const value = self.slotVal(v, d.id);
+      const err = self.checkModel(value);
+      if (err && !slotErr) slotErr = d.label + ': ' + err;
+      return {
+        id: 'slot-' + d.id,
+        label: d.label,
+        value: value,
+        border: err ? '#6B2A30' : '#23272E',
+        set: function (e) {
+          const next = Object.assign({}, v.over);
+          next[d.id] = e.target.value;
+          self.set({ over: next });
+        }
+      };
+    };
+    const claudeSlots = v.claude ? claudeDefs.map(mkSlot) : [];
+    const codexSlots = v.codex ? codexDefs.map(mkSlot) : [];
+
+    const ok = !u.err && !keyErr && !modelErr && !pidErr && !slotErr;
+
+    const tabDefs = [];
+    if (v.claude) tabDefs.push({ id: 'settings', label: 'settings.json', file: 'settings.json' });
+    if (v.codex) {
+      tabDefs.push({ id: 'toml', label: 'config.toml', file: 'config.toml' });
+      tabDefs.push({ id: 'catalog', label: 'models.json', file: 'models.json' });
+    }
+    tabDefs.push({ id: 'script', label: 'script đầy đủ', file: v.os === 'windows' ? 'setup.ps1' : 'setup.sh', star: true });
+    tabDefs.push({ id: 'oneline', label: 'lệnh 1 dòng', file: 'command.txt' });
+
+    let active = v.tab;
+    let found = false;
+    for (let i = 0; i < tabDefs.length; i++) { if (tabDefs[i].id === active) found = true; }
+    if (!found) active = tabDefs[0].id;
+
+    const tabs = tabDefs.map(function (t) {
+      const on = t.id === active;
+      return {
+        label: t.label,
+        starred: !!t.star,
+        bg: on ? '#121419' : 'transparent',
+        fg: on ? '#E6E8EB' : '#7C848F',
+        line: on ? accent : 'transparent',
+        pick: function () { self.set({ tab: t.id }); }
+      };
+    });
+
+    let body = '';
+    let note = '';
+    let noteColor = '#6E767F';
+    const current = tabDefs.filter(function (t) { return t.id === active; })[0];
+
+    if (ok) {
+      if (active === 'settings') {
+        body = this.buildSettings(v, u.val);
+        note = 'Trộn vào ~/.claude/settings.json, giữ nguyên khoá khác';
+      } else if (active === 'toml') {
+        body = this.buildToml(v, u.val, pid, pname);
+        note = 'Ghi đè ~/.codex/config.toml — sao lưu trước';
+        noteColor = '#E0A83C';
+      } else if (active === 'catalog') {
+        body = this.buildCatalog(v);
+        note = 'Xem rút gọn — file thật giữ đủ field của Codex';
+      } else if (active === 'script') {
+        body = this.buildScript(v, u.val, pid, pname);
+        note = 'Khuyến nghị — key không đi qua URL';
+        noteColor = accent;
+      } else {
+        body = this.buildOneLiner(v, u.val, pid, pname);
+        note = 'Key nằm trong URL: lưu vào lịch sử shell và log máy chủ trung gian';
+        noteColor = '#F2626B';
+      }
+    }
+
+    const onCount = (v.claude ? 1 : 0) + (v.codex ? 1 : 0);
+    const targets = [
+      { id: 'claude', label: 'Claude Code', on: v.claude },
+      { id: 'codex', label: 'Codex', on: v.codex }
+    ].map(function (t) {
+      const locked = t.on && onCount === 1;
+      return {
+        label: t.label,
+        on: t.on,
+        off: !t.on,
+        hint: locked ? 'Phải chọn ít nhất một công cụ' : '',
+        cursor: locked ? 'not-allowed' : 'pointer',
+        opacity: locked ? '0.65' : '1',
+        bg: t.on ? '#16201A' : 'transparent',
+        fg: t.on ? accent : '#7C848F',
+        bd: t.on ? accent : '#262A31',
+        pick: function () {
+          if (locked) return;
+          const patch = {};
+          patch[t.id] = !t.on;
+          self.set(patch);
+        }
+      };
+    });
+
+    const oses = [
+      { id: 'posix', label: 'macOS / Linux' },
+      { id: 'windows', label: 'Windows' }
+    ].map(function (o) {
+      const on = v.os === o.id;
+      return {
+        label: o.label,
+        bg: on ? '#1C2128' : 'transparent',
+        fg: on ? '#E6E8EB' : '#7C848F',
+        pick: function () { self.set({ os: o.id }); }
+      };
+    });
+
+    const tiers = ['haiku', 'sonnet', 'opus'].map(function (id) {
+      const on = v.subTier === id;
+      return {
+        label: id,
+        bg: on ? '#16201A' : 'transparent',
+        fg: on ? accent : '#7C848F',
+        pick: function () { self.set({ subTier: id }); }
+      };
+    });
+
+    let emptyHint = 'Điền endpoint, key và model để xem kết quả';
+    if (slotErr) emptyHint = 'Sửa model trong phần nâng cao để xem kết quả';
+    else if (pidErr) emptyHint = 'Sửa Provider ID để xem kết quả';
+
+    return {
+      accent: accent,
+      baseUrl: v.baseUrl,
+      apiKey: v.apiKey,
+      model: v.model,
+      providerId: pid,
+      providerName: pname,
+      urlErr: u.err,
+      hasUrlErr: !!u.err,
+      keyErr: keyErr,
+      hasKeyErr: !!keyErr,
+      modelErr: modelErr,
+      hasModelErr: !!modelErr,
+      pidErr: pidErr,
+      hasPidErr: !!pidErr,
+      pidBorder: pidErr ? '#6B2A30' : '#262A31',
+      slotErr: slotErr,
+      hasSlotErr: !!slotErr,
+      baseUrlBorder: u.err ? '#6B2A30' : '#262A31',
+      keyBorder: keyErr ? '#6B2A30' : '#262A31',
+      modelBorder: modelErr ? '#6B2A30' : '#262A31',
+      keyInputType: v.reveal ? 'text' : 'password',
+      revealLabel: v.reveal ? 'Ẩn' : 'Hiện',
+      claudeOn: v.claude,
+      codexOn: v.codex,
+      advanced: v.advanced,
+      caret: v.advanced ? 90 : 0,
+      slotCount: (claudeSlots.length + codexSlots.length) + ' bậc',
+      claudeSlots: claudeSlots,
+      codexSlots: codexSlots,
+      tiers: tiers,
+      targets: targets,
+      oses: oses,
+      tabs: tabs,
+      body: body,
+      emptyHint: emptyHint,
+      note: ok ? note : 'Chưa đủ dữ liệu hợp lệ',
+      noteColor: ok ? noteColor : '#6E767F',
+      isEmpty: !ok,
+      isReady: ok,
+      copyLabel: v.copied ? 'Đã chép' : 'Chép',
+      copyBg: v.copied ? '#16201A' : 'transparent',
+      copyFg: v.copied ? accent : '#98A0AB',
+      copyBd: v.copied ? accent : '#262A31',
+      copy: function () { self.flash({ copied: true, saved: false }); },
+      dlLabel: v.saved ? 'Đã tải' : current.file,
+      dlBg: v.saved ? '#16201A' : 'transparent',
+      dlFg: v.saved ? accent : '#98A0AB',
+      dlBd: v.saved ? accent : '#262A31',
+      download: function () { self.flash({ saved: true, copied: false }); },
+      toggleReveal: function () { self.set({ reveal: !v.reveal }); },
+      toggleAdvanced: function () { self.set({ advanced: !v.advanced }); },
+      onBaseUrl: function (e) { self.set({ baseUrl: e.target.value, pid: undefined, pname: undefined }); },
+      onKey: function (e) { self.set({ apiKey: e.target.value }); },
+      onModel: function (e) { self.set({ model: e.target.value }); },
+      onProviderId: function (e) { self.set({ pid: e.target.value }); },
+      onProviderName: function (e) { self.set({ pname: e.target.value }); }
+    };
+  }
+}
+</script>
+</body>
+</html>
