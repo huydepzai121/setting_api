@@ -67,4 +67,4 @@ DOCKERHUB_TOKEN=<docker-hub-access-token> sh scripts/docker-publish.sh
 
 Pushes on `main` and `v*` tags are also published automatically by
 `.github/workflows/docker-publish.yml`, which needs the repository secrets
-`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+`DOCKERHUB_TOKEN` (the Docker Hub username is set directly in the workflow).
