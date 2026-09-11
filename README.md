@@ -59,6 +59,18 @@ Or with Compose (builds locally if the image is missing):
 docker compose up --build
 ```
 
+The container always listens on port 3000. To publish it on a different host
+port — on a VPS already using 3000, for example — set `HOST_PORT`:
+
+```bash
+HOST_PORT=3100 docker compose up -d        # http://<vps>:3100
+docker run -d -p 3100:3000 huydepzai123454/setting_api:latest
+```
+
+To serve it on a domain over HTTPS, keep the container bound to localhost
+(`-p 127.0.0.1:3100:3000`) and let a reverse proxy such as Caddy or nginx
+forward to it.
+
 Build and publish a new version:
 
 ```bash

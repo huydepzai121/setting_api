@@ -3,8 +3,10 @@ services:
     image: huydepzai123454/setting_api:latest
     build:
       context: .
+    # The container always listens on 3000; HOST_PORT picks the port it is
+    # published on, so the app can share a host with other services.
     ports:
-      - "3000:3000"
+      - "${HOST_PORT:-3000}:3000"
     environment:
       NODE_ENV: production
       PORT: "3000"
