@@ -8,8 +8,8 @@
 # Never hardcode the token here — pass it through the environment.
 set -eu
 
-IMAGE="${IMAGE:-huydepzai12345/setting_api}"
-USERNAME="${DOCKERHUB_USERNAME:-huydepzai12345}"
+IMAGE="${IMAGE:-huydepzai123454/setting_api}"
+USERNAME="${DOCKERHUB_USERNAME:-huydepzai123454}"
 TAG="${1:-$(node -p "require('./package.json').version")}"
 
 if [ -n "${DOCKERHUB_TOKEN:-}" ]; then

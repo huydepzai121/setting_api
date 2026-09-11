@@ -45,12 +45,12 @@ intentionally not set — see `next.config.ts` and
 ## Docker
 
 The image is published to Docker Hub as
-[`huydepzai12345/setting_api`](https://hub.docker.com/r/huydepzai12345/setting_api).
+[`huydepzai123454/setting_api`](https://hub.docker.com/r/huydepzai123454/setting_api).
 
 Run the published image:
 
 ```bash
-docker run --rm -p 3000:3000 huydepzai12345/setting_api:latest
+docker run --rm -p 3000:3000 huydepzai123454/setting_api:latest
 ```
 
 Or with Compose (builds locally if the image is missing):
