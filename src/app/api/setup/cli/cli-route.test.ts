@@ -8,12 +8,22 @@ import { describe, expect, it } from "vitest";
 
 import { GET } from "./route";
 
-function request(headers: Record<string, string> = {}): Request {
-  return new Request("http://127.0.0.1:3000/api/setup/cli", { headers });
+function request(
+  headers: Record<string, string> = {},
+  query = "",
+): Request {
+  return new Request(`http://127.0.0.1:3000/api/setup/cli${query}`, {
+    headers,
+  });
 }
 
 async function body(headers?: Record<string, string>): Promise<string> {
   const response = await GET(request(headers));
+  return response.text();
+}
+
+async function windowsBody(): Promise<string> {
+  const response = await GET(request({}, "?os=windows"));
   return response.text();
 }
 
@@ -73,5 +83,33 @@ describe("GET /api/setup/cli", () => {
       request({ host: "example.com", "x-forwarded-proto": "javascript" }),
     );
     expect(response.status).toBe(400);
+  });
+
+  describe("?os=windows", () => {
+    it("serves the PowerShell script as plain text", async () => {
+      const response = await GET(request({}, "?os=windows"));
+      expect(response.status).toBe(200);
+      expect(response.headers.get("Content-Type")).toBe(
+        "text/plain; charset=utf-8",
+      );
+    });
+
+    it("serves the PowerShell prompt loop, not the POSIX one", async () => {
+      const script = await windowsBody();
+      expect(script).toContain("$ErrorActionPreference");
+      expect(script).not.toContain("#!/bin/sh");
+    });
+
+    it("bakes the origin into the PowerShell script too", async () => {
+      const script = await windowsBody();
+      expect(script).toContain('$ORIGIN = "http://127.0.0.1:3000"');
+      expect(script).not.toContain("{{");
+    });
+
+    it("asks the installer routes for their Windows scripts", async () => {
+      const script = await windowsBody();
+      expect(script).toContain('os       = "windows"');
+      expect(script).toContain('os            = "windows"');
+    });
   });
 });

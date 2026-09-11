@@ -1,10 +1,12 @@
 /**
  * `GET /api/setup/cli` — the interactive terminal setup script.
  *
- * Returns a shell script that asks, in the terminal, for the same fields the
+ * Returns a script that asks, in the terminal, for the same fields the
  * web UI asks for and then calls `/api/setup/claudecode` and
  * `/api/setup/codex` with the answers. Validation therefore stays entirely in
- * those routes; this one renders a prompt loop and nothing else.
+ * those routes; this one renders a prompt loop and nothing else. `?os=windows`
+ * selects the PowerShell twin of that prompt loop, the same way the installer
+ * routes select their own Windows templates.
  *
  * The only value substituted into the script is the origin it should call
  * back to. It is derived from the request rather than configuration so the
@@ -16,7 +18,7 @@
  * and explicitly dynamic because the response depends on request headers.
  */
 
-import { ALL_SCRIPT_TEMPLATES, renderScript } from "@/lib/script";
+import { ALL_SCRIPT_TEMPLATES, isWindows, renderScript } from "@/lib/script";
 
 export const dynamic = "force-dynamic";
 
@@ -68,12 +70,23 @@ export async function GET(request: Request): Promise<Response> {
     });
   }
 
-  const script = renderScript(ALL_SCRIPT_TEMPLATES["cli-posix.sh.tpl"], {
-    ORIGIN: origin,
-  });
+  const windows = isWindows(
+    new URL(request.url).searchParams.get("os") ?? undefined,
+  );
+
+  const script = renderScript(
+    ALL_SCRIPT_TEMPLATES[windows ? "cli-windows.ps1.tpl" : "cli-posix.sh.tpl"],
+    { ORIGIN: origin },
+  );
+
+  // Matches the installer routes: PowerShell is served as plain text, since
+  // there is no registered media type for it that a shell would honor.
+  const contentType = windows
+    ? "text/plain; charset=utf-8"
+    : "text/x-shellscript; charset=utf-8";
 
   return new Response(script, {
     status: 200,
-    headers: { "Content-Type": "text/x-shellscript; charset=utf-8" },
+    headers: { "Content-Type": contentType },
   });
 }

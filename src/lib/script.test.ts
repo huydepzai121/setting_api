@@ -199,6 +199,10 @@ describe("ALL_SCRIPT_TEMPLATES leftover-placeholder check", () => {
     const cliPosix = renderScript(ALL_SCRIPT_TEMPLATES["cli-posix.sh.tpl"], {
       ORIGIN: "https://setting.example.com",
     });
+    const cliWindows = renderScript(
+      ALL_SCRIPT_TEMPLATES["cli-windows.ps1.tpl"],
+      { ORIGIN: "https://setting.example.com" },
+    );
 
     const rendered = {
       "claudecode-posix.sh.tpl": claudeCodePosix,
@@ -206,6 +210,7 @@ describe("ALL_SCRIPT_TEMPLATES leftover-placeholder check", () => {
       "codex-posix.sh.tpl": codexPosix,
       "codex-windows.ps1.tpl": codexWindows,
       "cli-posix.sh.tpl": cliPosix,
+      "cli-windows.ps1.tpl": cliWindows,
     };
 
     // Sanity: this test must actually exercise every template this

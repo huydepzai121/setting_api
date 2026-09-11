@@ -20,8 +20,13 @@ sh -c "$(curl -fsSL http://<host>/api/setup/cli)"
 ```
 
 `curl -fsSL http://<host>/api/setup/cli | sh` works too — the prompts are read
-from `/dev/tty`, not stdin. POSIX shells only (macOS/Linux); Windows has no
-interactive equivalent yet, use the web UI or the one-liner routes.
+from `/dev/tty`, not stdin.
+
+On Windows, ask the same route for its PowerShell twin:
+
+```powershell
+irm "http://<host>/api/setup/cli?os=windows" | iex
+```
 
 Every answer is validated by the installer routes, so a bad key, model or base
 URL is rejected there and the failure naming the offending field is printed in
